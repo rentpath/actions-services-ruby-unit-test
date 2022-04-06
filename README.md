@@ -1,2 +1,2 @@
 # actions-services-ruby-unit-test
-GitHub Composite Action for Ruby Unit Test
+GitHub composite action for ruby testing

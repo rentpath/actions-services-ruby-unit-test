@@ -1,0 +1,42 @@
+name: Ruby Unit Testing
+inputs:
+  ruby-version:
+    required: false
+    type: string
+    default: default
+  bundler-env:
+    required: false
+    type: string
+    default: development
+  seed-db:
+    description: "Specify whether to seed db, optional"
+    required: false
+    type: string
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    - uses: mmaiza/actions-services-ruby-deps@main
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+        bundler-env: ${{ inputs.bundler-env }}
+    - name: Seeding
+      if: ${{ inputs.seed-db }}
+      run: |
+        bundle exec rake db:seed
+      env:
+        RACK_ENV: ${{ inputs.bundler-env }}
+        RAILS_ENV: ${{ inputs.bundler-env }}
+        APPLICATION_ENVIRONMENT: ${{ inputs.bundler-env }}
+      shell: bash
+    - name: Unit test
+      run: |
+        bundle exec rake db:reset db:seed
+        bundle exec rspec
+      shell: bash
+      env:
+        RACK_ENV: ${{ inputs.bundler-env }}
+        RAILS_ENV: ${{ inputs.bundler-env }}
+        APPLICATION_ENVIRONMENT: ${{ inputs.bundler-env }}
