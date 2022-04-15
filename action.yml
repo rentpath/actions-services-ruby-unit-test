@@ -12,10 +12,23 @@ inputs:
     description: "Specify whether to seed db, optional"
     required: false
     type: string
+  # using a string because booleans currently converted to strings
+  # within workflow dispatches and composite actions
+  # https://github.com/actions/runner/issues/1483
+  skip-checkout:
+    required: false
+    default: 'false'
+    type: string
+  update-db:
+    required: false
+    default: 'true'
+    type: string
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v3
+    - name: Optionally check out code
+      if: inputs.skip-checkout == 'false'
+      uses: actions/checkout@v3
       with:
         fetch-depth: 1
     - uses: mmaiza/actions-services-ruby-deps@main
@@ -31,9 +44,17 @@ runs:
         RAILS_ENV: ${{ inputs.bundler-env }}
         APPLICATION_ENVIRONMENT: ${{ inputs.bundler-env }}
       shell: bash
-    - name: Unit test
+    - name: Update db
+      if: inputs.update-db == 'true'
       run: |
         bundle exec rake db:reset db:seed
+      shell: bash
+      env:
+        RACK_ENV: ${{ inputs.bundler-env }}
+        RAILS_ENV: ${{ inputs.bundler-env }}
+        APPLICATION_ENVIRONMENT: ${{ inputs.bundler-env }}
+    - name: Unit test
+      run: |
         bundle exec rspec
       shell: bash
       env:
