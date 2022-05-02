@@ -1,7 +1,7 @@
 name: Ruby Unit Testing
 inputs:
   ruby-version:
-    required: false
+    required: true
     type: string
     default: default
   bundler-env:
@@ -18,7 +18,7 @@ runs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 1
-    - uses: mmaiza/actions-services-ruby-deps@main
+    - uses: rentpath/actions-services-ruby-deps@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
         bundler-env: ${{ inputs.bundler-env }}
