@@ -24,7 +24,8 @@ runs:
         ruby-version: ${{ inputs.ruby-version }}
         bundler-env: ${{ inputs.bundler-env }}
     - name: Setup DB
-      if: ${{ inputs.setup-db == "true" }}
+      if: ${{ inputs.setup-db == 'true' }}
+      shell: bash
       run: |
         bundle exec rake db:reset
     - name: Unit test
