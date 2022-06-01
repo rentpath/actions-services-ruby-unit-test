@@ -8,10 +8,11 @@ inputs:
     required: false
     type: string
     default: development
-  seed-db:
-    description: "Specify whether to seed db, optional"
+  setup-db:
+    description: "Whether or not to setup database with rake db commands"
     required: false
     type: string
+    default: "true"
 runs:
   using: composite
   steps:
@@ -22,18 +23,12 @@ runs:
       with:
         ruby-version: ${{ inputs.ruby-version }}
         bundler-env: ${{ inputs.bundler-env }}
-    - name: Seeding
-      if: ${{ inputs.seed-db }}
-      run: |
-        bundle exec rake db:seed
-      env:
-        RACK_ENV: ${{ inputs.bundler-env }}
-        RAILS_ENV: ${{ inputs.bundler-env }}
-        APPLICATION_ENVIRONMENT: ${{ inputs.bundler-env }}
-      shell: bash
-    - name: Unit test
+    - name: Setup DB
+      if: ${{ inputs.setup-db == "true" }}
       run: |
         bundle exec rake db:reset db:seed
+    - name: Unit test
+      run: |
         bundle exec rspec
       shell: bash
       env:
