@@ -26,7 +26,7 @@ runs:
     - name: Setup DB
       if: ${{ inputs.setup-db == "true" }}
       run: |
-        bundle exec rake db:reset db:seed
+        bundle exec rake db:reset
     - name: Unit test
       run: |
         bundle exec rspec
